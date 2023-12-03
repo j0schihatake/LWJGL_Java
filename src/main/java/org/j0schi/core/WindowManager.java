@@ -38,16 +38,24 @@ public class WindowManager {
     }
 
     public void init(){
+
+        /**
+         *  --stacktrace, чтобы получить трассировку стека.
+         *  --info или --debug, чтобы получить больше выходных данных журнала.
+         *  --scan, чтобы получить полную информацию.
+         */
+
         GLFWErrorCallback.createPrint(System.err).set();
 
         if(!GLFW.glfwInit())
             throw  new IllegalStateException("Unable to initialize GLFW");
 
+        // Из-за подсказок может не открываться окно:
         GLFW.glfwDefaultWindowHints();
-        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
+        //GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR,3);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR,2);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR,3);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
 
@@ -91,7 +99,9 @@ public class WindowManager {
 
         GL.createCapabilities();
 
+        // Черный цвет фона:
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         GL11.glEnable(GL11.GL_CULL_FACE);
