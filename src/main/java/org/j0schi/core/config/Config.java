@@ -1,6 +1,6 @@
-package org.j0schi.core.utils;
+package org.j0schi.core.config;
 
-public class Consts {
+public class Config {
 
     public static final String TITLE = "DEV J0SCHI ENGINE";
 }

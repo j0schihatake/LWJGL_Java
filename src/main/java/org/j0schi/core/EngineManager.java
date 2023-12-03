@@ -2,7 +2,7 @@ package org.j0schi.core;
 
 import lombok.Data;
 import org.j0schi.Launcher;
-import org.j0schi.core.utils.Consts;
+import org.j0schi.core.config.Config;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
@@ -19,11 +19,18 @@ public class EngineManager {
 
     private WindowManager window;
     private GLFWErrorCallback errorCallback;
+    private ILogic gameLogic;
 
     private void init(){
         GLFW.glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         window = Launcher.getWindow();
+        gameLogic = Launcher.getGame();
         window.init();
+        try {
+            gameLogic.init();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void start(){
@@ -61,7 +68,7 @@ public class EngineManager {
 
                 if(frameCounter >= NANOSECOND){
                     fps = frames;
-                    window.setTitle(Consts.TITLE + fps);
+                    window.setTitle(Config.TITLE + fps);
                     frames = 0;
                     frameCounter = 0;
                 }
@@ -82,16 +89,22 @@ public class EngineManager {
         isRunning = false;
     }
 
-    private void input(){}
+    private void input(){
+        gameLogic.input();
+    }
 
     private void render(){
+        gameLogic.render();
         window.update();
     }
 
-    private void update(){}
+    private void update(){
+        gameLogic.update();
+    }
 
     private void cleanup(){
         window.cleanup();
+        gameLogic.cleanup();
         errorCallback.free();
         GLFW.glfwTerminate();
     }

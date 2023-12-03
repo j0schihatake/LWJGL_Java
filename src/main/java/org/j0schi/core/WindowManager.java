@@ -108,6 +108,10 @@ public class WindowManager {
         GL11.glCullFace(GL11.GL_BACK);
     }
 
+    public void setClearColor(float red, float green, float blue, float alpha){
+        GL11.glClearColor(red, green, blue, alpha);
+    }
+
     public void update(){
         GLFW.glfwSwapBuffers(window);
         GLFW.glfwPollEvents();
