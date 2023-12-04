@@ -4,8 +4,10 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.j0schi.Launcher;
 import org.j0schi.core.ILogic;
+import org.j0schi.core.ObjectLoader;
 import org.j0schi.core.RenderManager;
 import org.j0schi.core.WindowManager;
+import org.j0schi.core.entity.Model;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -17,14 +19,28 @@ public class TestGame implements ILogic {
     private final RenderManager render;
     private final WindowManager window;
 
+    private final ObjectLoader loader;
+    private Model model;
+
     public TestGame(){
         render = new RenderManager();
         window = Launcher.getWindow();
+        loader = new ObjectLoader();
     }
 
     @Override
     public void init() throws Exception {
         render.init();
+
+        float[] vertices = {
+                -0.5f, 0.5f, 0f,
+                -0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                0.5f, 0.5f, 0f,
+                -0.5f, 0.5f, 0f
+        };
+        model = loader.loadModel(vertices);
     }
 
     @Override
@@ -54,11 +70,12 @@ public class TestGame implements ILogic {
         }
 
         window.setClearColor(color, color, color, 0.0f);
-        render.clenup();
+        render.render(model);
     }
 
     @Override
     public void cleanup() {
         render.clenup();
+        loader.cleanup();
     }
 }
