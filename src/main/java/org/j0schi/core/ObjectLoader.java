@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +17,20 @@ public class ObjectLoader {
     private List<Integer> vaos = new ArrayList<>();
     private List<Integer> vbos = new ArrayList<>();
 
-    public Model loadModel(float[] verteces){
+    public Model loadModel(float[] verteces, int[] indices){
         int id = createVAD();
+        storeIndicesBuffer(indices);
         storeDataInAttribList(0, 3, verteces);
         unbind();
         return new Model(id, verteces.length / 3);
+    }
+
+    private void storeIndicesBuffer(int[] indices){
+        int vbo = GL15.glGenBuffers();
+        vbos.add(vbo);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vbo);
+        IntBuffer buffer = Utils.storeDataInIntBuffer(indices);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
 
     private int createVAD(){
