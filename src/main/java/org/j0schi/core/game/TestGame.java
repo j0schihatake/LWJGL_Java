@@ -8,6 +8,7 @@ import org.j0schi.core.ObjectLoader;
 import org.j0schi.core.RenderManager;
 import org.j0schi.core.WindowManager;
 import org.j0schi.core.entity.Model;
+import org.j0schi.core.entity.Texture;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -33,19 +34,26 @@ public class TestGame implements ILogic {
         render.init();
 
         float[] vertices = {
-                -0.5f, 0.5f, 0f,
+                -0.5f,  0.5f, 0f,
                 -0.5f, -0.5f, 0f,
                 0.5f, -0.5f, 0f,
-                0.5f, -0.5f, 0f,
-                0.5f, 0.5f, 0f,
-                -0.5f, 0.5f, 0f
+                0.5f,  0.5f, 0f,
         };
 
         int[] indicies = {
           0,1,3,
           3,1,2
         };
-        model = loader.loadModel(vertices, indicies);
+
+        float[] textureCoords = {
+                0,0,
+                0,1,
+                1,1,
+                1,0
+        };
+
+        model = loader.loadModel(vertices, textureCoords, indicies);
+        model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")));
     }
 
     @Override
