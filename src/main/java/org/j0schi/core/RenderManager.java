@@ -1,7 +1,9 @@
 package org.j0schi.core;
 
 import org.j0schi.Launcher;
+import org.j0schi.core.entity.Entity;
 import org.j0schi.core.entity.Model;
+import org.j0schi.core.utils.Transformation;
 import org.j0schi.core.utils.Utils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -23,18 +25,20 @@ public class RenderManager {
         shader.createFragmentShader(Utils.loadResource("/shaders/fragment.fs"));
         shader.link();
         shader.createUniform("textureSampler");
+        shader.createUniform("transformationMatrix");
     }
 
-    public void render(Model model){
+    public void render(Entity entity){
         clear();
         shader.bind();
         shader.setUniform("textureSampler", 0);
-        GL30.glBindVertexArray(model.getId());
+        shader.setUniform("transformationMatrix", Transformation.createTransformationMatrix(entity));
+        GL30.glBindVertexArray(entity.getModel().getId());
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL13.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
-        GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+        GL13.glBindTexture(GL11.GL_TEXTURE_2D, entity.getModel().getTexture().getId());
+        GL11.glDrawElements(GL11.GL_TRIANGLES, entity.getModel().getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
         GL30.glBindVertexArray(0);

@@ -1,14 +1,14 @@
 package org.j0schi.core.game;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.j0schi.Launcher;
 import org.j0schi.core.ILogic;
 import org.j0schi.core.ObjectLoader;
 import org.j0schi.core.RenderManager;
 import org.j0schi.core.WindowManager;
+import org.j0schi.core.entity.Entity;
 import org.j0schi.core.entity.Model;
 import org.j0schi.core.entity.Texture;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -21,7 +21,7 @@ public class TestGame implements ILogic {
     private final WindowManager window;
 
     private final ObjectLoader loader;
-    private Model model;
+    private Entity entity;
 
     public TestGame(){
         render = new RenderManager();
@@ -52,8 +52,9 @@ public class TestGame implements ILogic {
                 1,0
         };
 
-        model = loader.loadModel(vertices, textureCoords, indicies);
+        Model model = loader.loadModel(vertices, textureCoords, indicies);
         model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")));
+        entity = new Entity(model, new Vector3f(1,0,0), new Vector3f(0,0,0), 1);
     }
 
     @Override
@@ -73,6 +74,10 @@ public class TestGame implements ILogic {
             color = 1.0f;
         else if(color <= 0)
             color = 0.0f;
+
+        if(entity.getPos().x < -1.5f)
+            entity.getPos().x = 1.5f;
+        entity.getPos().x -= 0.01f;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class TestGame implements ILogic {
         }
 
         window.setClearColor(color, color, color, 0.0f);
-        render.render(model);
+        render.render(entity);
     }
 
     @Override
