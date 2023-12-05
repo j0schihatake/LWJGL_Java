@@ -2,9 +2,11 @@ package org.j0schi.core.game;
 
 import org.j0schi.Launcher;
 import org.j0schi.core.*;
+import org.j0schi.core.config.Config;
 import org.j0schi.core.entity.Entity;
 import org.j0schi.core.entity.Model;
 import org.j0schi.core.entity.Texture;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -115,11 +117,16 @@ public class TestGame implements ILogic {
     }
 
     @Override
-    public void update() {
+    public void update(float interval, MouseInput mouseInput) {
         camera.movePosition(
                 cameraInc.x * CAMERA_MOVE_SPEED,
                 cameraInc.y * CAMERA_MOVE_SPEED,
                 cameraInc.z * CAMERA_MOVE_SPEED);
+
+        if(mouseInput.isRightButtonPress()){
+            Vector2f rotVec = mouseInput.getDisplVec();
+            camera.moveRotation(rotVec.x * Config.MOUSE_SENSITIVITY, rotVec.y * Config.MOUSE_SENSITIVITY, 0);
+        }
 
         entity.incRotation(0.0f, 0.5f,0.0f);
     }

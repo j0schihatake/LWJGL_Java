@@ -17,17 +17,20 @@ public class EngineManager {
 
     public boolean isRunning;
 
-    private WindowManager window;
+    private WindowManager windowManager;
+    private MouseInput mouseInput;
     private GLFWErrorCallback errorCallback;
     private ILogic gameLogic;
 
     private void init(){
         GLFW.glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
-        window = Launcher.getWindow();
+        windowManager = Launcher.getWindow();
         gameLogic = Launcher.getGame();
-        window.init();
+        mouseInput = new MouseInput();
         try {
+            windowManager.init();
             gameLogic.init();
+            mouseInput.init();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -63,19 +66,19 @@ public class EngineManager {
                 render = true;
                 unprocessedTime -= frametime;
 
-                if(window.windowShouldClose())
+                if(windowManager.windowShouldClose())
                     stop();
 
                 if(frameCounter >= NANOSECOND){
                     fps = frames;
-                    window.setTitle(Config.TITLE + fps);
+                    windowManager.setTitle(Config.TITLE + fps);
                     frames = 0;
                     frameCounter = 0;
                 }
             }
 
             if(render){
-                update();
+                update(0f);
                 render();
                 frames++;
             }
@@ -90,20 +93,21 @@ public class EngineManager {
     }
 
     private void input(){
+        mouseInput.input();
         gameLogic.input();
     }
 
     private void render(){
         gameLogic.render();
-        window.update();
+        windowManager.update();
     }
 
-    private void update(){
-        gameLogic.update();
+    private void update(float interval){
+        gameLogic.update(interval, mouseInput);
     }
 
     private void cleanup(){
-        window.cleanup();
+        windowManager.cleanup();
         gameLogic.cleanup();
         errorCallback.free();
         GLFW.glfwTerminate();
