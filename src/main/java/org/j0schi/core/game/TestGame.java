@@ -6,6 +6,7 @@ import org.j0schi.core.config.Config;
 import org.j0schi.core.entity.Entity;
 import org.j0schi.core.entity.Model;
 import org.j0schi.core.entity.Texture;
+import org.j0schi.core.lighting.DirectionalLight;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -22,6 +23,9 @@ public class TestGame implements ILogic {
     private Entity entity;
     private Camera camera;
 
+    private float lightAngle;
+    private DirectionalLight directionalLight;
+
     Vector3f cameraInc;
 
     public TestGame(){
@@ -30,6 +34,7 @@ public class TestGame implements ILogic {
         loader = new ObjectLoader();
         camera = new Camera();
         cameraInc = new Vector3f(0,0,0);
+        lightAngle = -90;
     }
 
     @Override
@@ -40,6 +45,12 @@ public class TestGame implements ILogic {
         Model model = loader.loadObjModel("/models/bunny.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")), 1f);
         entity = new Entity(model, new Vector3f(0,0,-5), new Vector3f(0,0,0), 1);
+
+        float lightIntensity = 1.0f;
+        Vector3f lightPosition = new Vector3f(-1, -10, 0);
+        Vector3f lightColour = new Vector3f(1,1,1);
+        directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
+
     }
 
     @Override
@@ -75,7 +86,28 @@ public class TestGame implements ILogic {
             camera.moveRotation(rotVec.x * Config.MOUSE_SENSITIVITY, rotVec.y * Config.MOUSE_SENSITIVITY, 0);
         }
 
-        entity.incRotation(0.0f, 0.2f,0.0f);
+        //entity.incRotation(0.0f, 0.2f,0.0f);
+
+        lightAngle += 0.5f;
+        if(lightAngle > 90){
+            directionalLight.setIntensity(0);
+            if(lightAngle >= 360){
+                lightAngle = -90;
+            }
+        } else if (lightAngle <= -80 || lightAngle >= 80) {
+            float factor = 1 - (float)(Math.abs(lightAngle) - 80) / 10.0f;
+            directionalLight.setIntensity(factor);
+            directionalLight.getColour().y = Math.max(factor, 0.9f);
+            directionalLight.getColour().z = Math.max(factor, 0.5f);
+        } else{
+            directionalLight.setIntensity(1);
+            directionalLight.getColour().x = 1;
+            directionalLight.getColour().y = 1;
+            directionalLight.getColour().z = 1;
+        }
+        double angRad = Math.toRadians(lightAngle);
+        directionalLight.getDirection().x = (float)Math.sin(angRad);
+        directionalLight.getDirection().y = (float)Math.cos(angRad);
     }
 
     @Override
@@ -84,7 +116,7 @@ public class TestGame implements ILogic {
             GL11.glViewport(0,0,window.getWidth(), window.getHeight());
             window.setResize(true);
         }
-        render.render(entity, camera);
+        render.render(entity, camera, directionalLight);
     }
 
     @Override

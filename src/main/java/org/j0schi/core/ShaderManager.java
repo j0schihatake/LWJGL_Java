@@ -1,6 +1,7 @@
 package org.j0schi.core;
 
 import org.j0schi.core.entity.Material;
+import org.j0schi.core.lighting.DirectionalLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -32,12 +33,32 @@ public class ShaderManager {
         uniforms.put(uniformName, uniformLocation);
     }
 
+    public void createDirectionalLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
+    public void setUniform(String uniformName, DirectionalLight directionalLight){
+        setUniform(uniformName + ".colour", directionalLight.getColour());
+        setUniform(uniformName + ".direction", directionalLight.getDirection());
+        setUniform(uniformName + ".intensity", directionalLight.getIntensity());
+    }
+
     public void createMaterialUniform(String uniformName) throws Exception {
         createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
         createUniform(uniformName + ".hasTexture");
         createUniform(uniformName + ".reflectance");
+    }
+
+    public void setUniform(String uniformName, Material material){
+        setUniform(uniformName + ".ambient", material.getAmbientColour());
+        setUniform(uniformName + ".diffuse", material.getDiffuseColour());
+        setUniform(uniformName + ".specular", material.getSpecularColour());
+        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
+        setUniform(uniformName + ".reflectance", material.getReflectance());
     }
 
     public void setUniform(String uniformName, Matrix4f value){
@@ -67,14 +88,6 @@ public class ShaderManager {
 
     public void setUniform(String uniformName, float value){
         GL20.glUniform1f(uniforms.get(uniformName), value);
-    }
-
-    public void setUniform(String uniformName, Material material){
-        setUniform(uniformName + ".ambient", material.getAmbientColour());
-        setUniform(uniformName + ".diffuse", material.getDiffuseColour());
-        setUniform(uniformName + ".specular", material.getSpecularColour());
-        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
-        setUniform(uniformName + ".reflectance", material.getReflectance());
     }
 
     public void createVertexShader(String shaderCode) throws Exception {

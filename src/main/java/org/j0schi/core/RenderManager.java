@@ -4,6 +4,7 @@ import org.j0schi.Launcher;
 import org.j0schi.core.config.Config;
 import org.j0schi.core.entity.Entity;
 import org.j0schi.core.entity.Model;
+import org.j0schi.core.lighting.DirectionalLight;
 import org.j0schi.core.utils.Transformation;
 import org.j0schi.core.utils.Utils;
 import org.lwjgl.opengl.GL11;
@@ -31,9 +32,11 @@ public class RenderManager {
         shader.createUniform("viewMatrix");
         shader.createUniform("ambientLight");
         shader.createMaterialUniform("material");
+        shader.createUniform("specularPower");
+        shader.createDirectionalLightUniform("directionalLight");
     }
 
-    public void render(Entity entity, Camera camera){
+    public void render(Entity entity, Camera camera, DirectionalLight directionalLight){
 
         clear();
         shader.bind();
@@ -44,6 +47,8 @@ public class RenderManager {
         shader.setUniform("viewMatrix", Transformation.getViewMatrix(camera));
         shader.setUniform("material", entity.getModel().getMaterial());
         shader.setUniform("ambientLight", Config.AMBIENT_LIGHT);
+        shader.setUniform("specularPower", Config.SPECULAR_POWER);
+        shader.setUniform("directionalLight", directionalLight);
 
         GL30.glBindVertexArray(entity.getModel().getId());
         GL20.glEnableVertexAttribArray(0);
